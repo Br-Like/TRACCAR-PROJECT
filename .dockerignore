@@ -1,0 +1,8 @@
+node_modules
+build
+.git
+.github
+documentacao
+smsSender-traccar
+arquivo_final.tar.gz
+*.tar.gz

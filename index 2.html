@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="${colorPrimary}" />
+  <meta name="description" content="Likesat" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" sizes="180x180" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" crossorigin href="/assets/index-IVSb-oO_.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Likesat</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" crossorigin href="/assets/index-IVSb-oO_.css">
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#0b1c30",
+            "surface-dim": "#cbdbf5",
+            "tertiary-container": "#282c2e",
+            "inverse-primary": "#a5cce2",
+            "secondary-container": "#0070eb",
+            "outline": "#72787c",
+            "on-tertiary-container": "#8f9395",
+            "on-primary-container": "#7298ad",
+            "outline-variant": "#c1c7cc",
+            "surface": "#f8f9ff",
+            "surface-container": "#e5eeff",
+            "primary-fixed": "#c1e8fe",
+            "on-tertiary": "#ffffff",
+            "background": "#f8f9ff",
+            "inverse-surface": "#213145",
+            "tertiary": "#141819",
+            "error-container": "#ffdad6",
+            "secondary": "#0058bc",
+            "on-primary": "#ffffff",
+            "primary-container": "#003041",
+            "surface-container-highest": "#d3e4fe",
+            "surface-container-lowest": "#ffffff",
+            "inverse-on-surface": "#eaf1ff",
+            "surface-variant": "#d3e4fe",
+            "surface-bright": "#f8f9ff",
+            "primary": "#001a25",
+            "surface-container-high": "#dce9ff",
+            "primary-fixed-dim": "#a5cce2",
+            "secondary-fixed": "#d8e2ff",
+            "error": "#ba1a1a",
+            "on-surface-variant": "#41484c",
+            "surface-container-low": "#eff4ff",
+            "on-secondary-container": "#fefcff",
+            "on-background": "#0b1c30",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"
+          },
+          spacing: {
+            "margin-desktop": "32px", lg: "40px", xs: "8px", sm: "16px",
+            base: "4px", xl: "64px", gutter: "16px", "margin-mobile": "16px", md: "24px"
+          },
+          fontFamily: {
+            "label-mono": ["JetBrains Mono"],
+            "body-lg": ["Hanken Grotesk"],
+            "headline-lg": ["Hanken Grotesk"],
+            "headline-lg-mobile": ["Hanken Grotesk"],
+            "title-md": ["Hanken Grotesk"],
+            "body-sm": ["Hanken Grotesk"],
+            "display-lg": ["Hanken Grotesk"]
+          },
+          fontSize: {
+            "label-mono": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500" }],
+            "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "600" }],
+            "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+            "title-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+            "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* -- Reset & root layout -- */
+    *, *::before, *::after { box-sizing: border-box; }
+
+     /* -- Traccar loader (kept from original) -- */
+    .loader {
+      position: fixed; inset: 0; margin: auto;
+      width: 40px; aspect-ratio: 1; border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.15); border-right-color: #a5cce2;
+      animation: spin 1s infinite linear; pointer-events: none;
+      opacity: 0; /* hidden until overlay removed */
+    }
+    @keyframes spin { to { transform: rotate(1turn); } }
+
+    /* -- Login overlay -- */
+    #login-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      overflow-y: auto;
+      transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* -- Hero gradient -- */
+    .hero-gradient {
+      background: linear-gradient(140deg,
+        rgba(0,48,65,0.88) 0%,
+        rgba(0,26,37,0.97) 55%,
+        rgba(0,10,18,1) 100%);
+    }
+
+    /* -- Grain texture overlay -- */
+    .grain::after {
+      content: '';
+      position: absolute; inset: 0;
+      //background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      //background-size: 180px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* -- Glass utility -- */
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* -- Card -- */
+    .login-card {
+      background: rgba(255,255,255,0.98);
+      box-shadow:
+        0 0 0 1px rgba(0,26,37,0.06),
+        0 4px 6px -1px rgba(0,26,37,0.06),
+        0 24px 48px -12px rgba(0,26,37,0.22);
+    }
+
+    /* -- Input base -- */
+    .field-input {
+      width: 100%;
+      padding: 12px 16px 12px 56px !important;
+      background: #f0f6ff;
+      border: 1.5px solid #c1c7cc;
+      border-radius: 10px;
+      font-size: 14px; line-height: 20px;
+      color: #0b1c30;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      font-family: 'Hanken Grotesk', sans-serif;
+    }
+    .field-input::placeholder { color: #9ca3af; }
+    .field-input:focus {
+      border-color: #0070eb;
+      box-shadow: 0 0 0 3px rgba(0,112,235,0.12);
+    }
+
+    /* -- Icon left in input -- */
+    .field-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 20px; color: #72787c; pointer-events: none;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      transition: color 0.2s;
+    }
+    .field-input:focus ~ .field-icon { color: #0070eb; }
+
+    /* Sibling trick won't work with icon after input; use JS or wrapper class instead */
+    .field-wrap:focus-within .field-icon { color: #0070eb; }
+
+    /* -- Submit button -- */
+    .btn-login {
+      width: 100%;
+      padding: 14px 24px;
+      background: #003041;
+      color: #fff;
+      border: none; border-radius: 10px;
+      font-size: 16px; font-weight: 600; line-height: 24px;
+      font-family: 'Hanken Grotesk', sans-serif;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(0,48,65,0.22);
+      position: relative; overflow: hidden;
+    }
+    .btn-login::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+    }
+    .btn-login:hover:not(:disabled) { background: #001a25; box-shadow: 0 6px 24px rgba(0,26,37,0.32); }
+    .btn-login:active:not(:disabled) { transform: scale(0.985); }
+    .btn-login:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    /* -- Loading spinner inside button -- */
+    .btn-spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.3); border-right-color: #fff;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .btn-login.loading .btn-spinner { display: block; }
+    .btn-login.loading .btn-label { display: none; }
+
+    /* -- Error banner -- */
+    .error-banner {
+      display: none;
+      background: #fff1f1;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px; color: #991b1b;
+      align-items: flex-start; gap: 8px;
+    }
+    .error-banner.visible { display: flex; }
+
+    /* -- Material icons -- */
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle; user-select: none;
+    }
+
+    /* -- Checking spinner in header -- */
+    .checking-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25); border-right-color: rgba(255,255,255,0.85);
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* -- Responsive tweaks -- */
+    @media (max-height: 660px) {
+      .reduce-gap { gap: 12px !important; }
+      .reduce-pad { padding-top: 12px !important; padding-bottom: 12px !important; }
+    }
+    @media (max-width: 360px) {
+      .login-card { border-radius: 12px !important; }
+    }
+
+    /* -- MUI bottom nav fix -- */
+    //.MuiBottomNavigation-root {
+    //  position: fixed !important; bottom: 0 !important;
+    //  left: 0 !important; right: 0 !important;
+    //  z-index: 100; width: 100% !important;
+    //}
+
+    /* -- Link modal -- */
+    #linkModal { display: none; }
+    #linkModal.open { display: flex; }
+  </style>
+</head>
+
+<body>
+
+<!-- --------------------------------------
+     TRACCAR APP ROOT  (renders after login)
+---------------------------------------- -->
+<div id="root" class="root"></div>
+<div class="loader" id="app-loader"></div>
+
+<!-- --------------------------------------
+     LINK MODAL
+---------------------------------------- -->
+<div id="linkModal"
+     class="fixed inset-0 bg-black/50 items-center justify-center z-[10000] backdrop-blur-sm">
+  <div class="bg-white rounded-xl shadow-2xl w-[92vw] max-w-[400px] p-6">
+    <h3 class="text-base font-semibold text-gray-900 mb-4">Abrir endereço</h3>
+    <input id="customLinkInput" type="text" placeholder="https://..."
+           class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm mb-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 font-body-sm" />
+    <div class="flex justify-end gap-2">
+      <button id="cancelModal"
+              class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+        Cancelar
+      </button>
+      <button id="confirmModal"
+              class="px-4 py-2 rounded-lg bg-primary-container text-white text-sm font-medium hover:bg-primary transition-colors">
+        Abrir
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- --------------------------------------
+     LOGIN OVERLAY
+---------------------------------------- -->
+<div id="login-overlay">
+
+  <!-- Background photo + gradient -->
+  <div class="fixed inset-0 z-0 grain" id="bg-layer">
+    <!--<img
+      alt="Frota de caminh�es modernos"
+      class="w-full h-full object-cover"
+      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV9wNvkl5eKq4dZ5SROQSgJXn3CB9Myvo3rc63C9YKWrq_CXPz7Zm5V7kbTQ66o1Y8CBNC_znoN6JPlu0TFL8MmnJ83j26GZdjw_lY5GKhjJeX1xh-N1LZHwRT6zA9ZBLYp8yMtRqWLuAWYWlSCH7PmFj64qk53vZI8qLALTnygr_lQfev1Ny2eitThRJPRpetz3Wci-4smendp2S6EwasHo5elUe1eWvXzVN5bnNKborH6JE24zb_13vKFdb6IDfZy6qoRkYm-lk"
+    />-->
+    <div class="absolute inset-0 hero-gradient"></div>
+  </div>
+
+  <!-- Overlay content -->
+  <div class="relative z-10 min-h-screen flex flex-col" id="overlay-main">
+
+    <!-- -- Header -- -->
+    <header class="flex justify-between items-center px-6 py-4 md:px-16 md:py-2 w-full">
+
+      <!-- Logo -->
+      <img
+        alt="Likesat Logo"
+        class="h-8 md:h-9 w-auto brightness-0 invert"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQqJ5UzxNMDX_ye-nUV6UZzeG2q6EkBbhI8XydweqMB3WuocDoqAuBqKM6Iyx8CsUdY2QbeVvVvRhgxk-g7ZampaJr8vFOrkBFBGkGZwa_GWAUqPU7hjpsgKgivH8n7dOaakR6F3Bv3Lv-3Dz0450njfEe8Ql48G2_7vEB-NoKpAMy2aAW-AlCtY1xbL79oxbNJt03McsQRvCHDoW8_hxd2ZEcf_cW677tgONdPaD4lt9paj5yCB6MM597KWheNWsRRDGglTr1AXE"
+      />
+
+      <!-- Right actions -->
+      <div class="flex items-center gap-2">
+
+        <!-- Link button -->
+        <button id="redirectButton"
+                class="glass flex items-center justify-center w-10 h-10 rounded-lg text-white hover:bg-white/15 transition-all"
+                title="Abrir endere�o">
+          <span class="material-symbols-outlined" style="font-size:20px">link</span>
+        </button>
+
+        <!-- Language selector -->
+        <div class="glass flex items-center gap-1.5 px-3 h-10 rounded-lg hover:bg-white/15 transition-all cursor-pointer">
+          <span class="material-symbols-outlined text-white" style="font-size:18px">language</span><select id="language"
+                class="bg-transparent text-white text-body-sm font-body-sm border-none outline-none cursor-pointer appearance-none pr-xs"
+                style="background: transparent;">
+	            <option value="af" style="background:#001a25;">🇿🇦 Afrikaans</option>
+                    <option value="ar" style="background:#001a25;">🇦🇪 العربية</option>
+                    <option value="az" style="background:#001a25;">🇦🇿 Azərbaycanca</option>
+                    <option value="bg" style="background:#001a25;">🇧🇬 Български</option>
+                    <option value="bn" style="background:#001a25;">🇮🇳 বাংলা</option>
+                    <option value="ca" style="background:#001a25;">🇪🇸 Català</option>
+                    <option value="cs" style="background:#001a25;">🇨🇿 Čeština</option>
+                    <option value="da" style="background:#001a25;">🇩🇰 Dansk</option>
+                    <option value="de" style="background:#001a25;">🇩🇪 Deutsch</option>
+                    <option value="el" style="background:#001a25;">🇬🇷 Ελληνικά</option>
+                    <option value="en" style="background:#001a25;">🇺🇸 English</option>
+                    <option value="es" style="background:#001a25;">🇪🇸 Español</option>
+                    <option value="fa" style="background:#001a25;">🇮🇷 فارسی</option>
+                    <option value="fi" style="background:#001a25;">🇫🇮 Suomi</option>
+                    <option value="fr" style="background:#001a25;">🇫🇷 Français</option>
+                    <option value="gl" style="background:#001a25;">🇪🇸 Galego</option>
+                    <option value="he" style="background:#001a25;">🇮🇱 עברית</option>
+                    <option value="hi" style="background:#001a25;">🇮🇳 हिन्दी</option>
+                    <option value="hr" style="background:#001a25;">🇭🇷 Hrvatski</option>
+                    <option value="hu" style="background:#001a25;">🇭🇺 Magyar</option>
+                    <option value="id" style="background:#001a25;">🇮🇩 Bahasa Indonesia</option>
+                    <option value="it" style="background:#001a25;">🇮🇹 Italiano</option>
+                    <option value="ja" style="background:#001a25;">🇯🇵 日本語</option>
+                    <option value="ka" style="background:#001a25;">🇬🇪 ქართული</option>
+                    <option value="kk" style="background:#001a25;">🇰🇿 Қазақша</option>
+                    <option value="km" style="background:#001a25;">🇰🇭 ភាសាខ្មែរ</option>
+                    <option value="ko" style="background:#001a25;">🇰🇷 한국어</option>
+                    <option value="lo" style="background:#001a25;">🇱🇦 ລາວ</option>
+                    <option value="lt" style="background:#001a25;">🇱🇹 Lietuvių</option>
+                    <option value="lv" style="background:#001a25;">🇱🇻 Latviešu</option>
+                    <option value="mk" style="background:#001a25;">🇲🇰 Mакедонски</option>
+                    <option value="ml" style="background:#001a25;">🇮🇳 മലയാളം</option>
+                    <option value="mn" style="background:#001a25;">🇲🇳 Монгол хэл</option>
+                    <option value="ms" style="background:#001a25;">🇲🇾 بهاس ملايو</option>
+                    <option value="nb" style="background:#001a25;">🇳🇴 Norsk bokmål</option>
+                    <option value="ne" style="background:#001a25;">🇳🇵 नेपाली</option>
+                    <option value="nl" style="background:#001a25;">🇳🇱 Nederlands</option>
+                    <option value="nn" style="background:#001a25;">🇳🇴 Norsk nynorsk</option>
+                    <option value="pl" style="background:#001a25;">🇵🇱 Polski</option>
+                    <option value="pt" style="background:#001a25;">🇵🇹 Português</option>
+                    <option value="pt_BR" style="background:#001a25;" selected>🇧🇷 Português (Brasil)</option>
+                    <option value="ro" style="background:#001a25;">🇷🇴 Română</option>
+                    <option value="ru" style="background:#001a25;">🇷🇺 Русский</option>
+                    <option value="si" style="background:#001a25;">🇱🇰 සිංහල</option>
+                    <option value="sk" style="background:#001a25;">🇸🇰 Slovenčina</option>
+                    <option value="sl" style="background:#001a25;">🇸🇮 Slovenščina</option>
+                    <option value="sq" style="background:#001a25;">🇦🇱 Shqipëria</option>
+                    <option value="sr" style="background:#001a25;">🇷🇸 Srpski</option>
+                    <option value="sv" style="background:#001a25;">🇸🇪 Svenska</option>
+                    <option value="ta" style="background:#001a25;">🇮🇳 தமிழ்</option>
+                    <option value="th" style="background:#001a25;">🇹🇭 ไทย</option>
+                    <option value="tr" style="background:#001a25;">🇹🇷 Türkçe</option>
+                    <option value="uk" style="background:#001a25;">🇺🇦 Українська</option>
+                    <option value="uz" style="background:#001a25;">🇺🇿 Oʻzbekcha</option>
+                    <option value="vi" style="background:#001a25;">🇻🇳 Tiếng Việt</option>
+                    <option value="zh" style="background:#001a25;">🇨🇳 中文</option>
+                    <option value="zh_TW" style="background:#001a25;">🇹🇼 中文 (Taiwan)</option>
+            </select>
+          <span class="material-symbols-outlined text-white pointer-events-none" style="font-size:16px">expand_more</span>
+        </div>
+
+        <!-- Session checking indicator -->
+        <div id="checking" class="checking-dot" style="display:none"></div>
+
+      </div>
+    </header>
+
+    <!-- -- Card area -- -->
+    <div class="flex-1 flex items-center justify-center px-4 py-10 md:py-10">
+
+      <div class="login-card w-full max-w-[420px] rounded-2xl overflow-hidden">
+
+        <!-- Card top accent bar -->
+        <div class="h-1 w-full" style="background: linear-gradient(90deg, #003041 0%, #0070eb 60%, #a5cce2 100%);"></div>
+
+        <div class="p-7 md:p-9 flex flex-col gap-6">
+
+          <!-- Heading -->
+          <div>
+            <p class="text-xs font-mono tracking-widest uppercase text-blue-500 mb-1"
+               style="font-family:'JetBrains Mono',monospace; letter-spacing:0.1em;">
+              Likesat
+            </p>
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900" style="line-height:1.2;">
+              Bem-vindo de volta
+            </h1>
+            <p class="mt-1 text-sm text-gray-500">Acesse o painel de rastreamento</p>
+          </div>
+
+          <!-- Error banner -->
+          <div class="error-banner" id="login-error" role="alert">
+            <span class="material-symbols-outlined" style="font-size:18px;flex-shrink:0;margin-top:1px">error</span>
+            <span id="error-text"></span>
+          </div>
+
+          <!-- Form fields -->
+          <div class="flex flex-col gap-4">
+
+            <!-- Email -->
+            <div>
+              <label class="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5"
+                     style="font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;"
+                     for="email">
+                E-mail
+              </label>
+              <div class="relative field-wrap">
+               <span class="material-symbols-outlined field-icon">mail</span>
+                <input id="email" type="email" name="email"
+                       class="field-input"
+                       placeholder="nome@empresa.com"
+                       autocomplete="email" required />
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label class="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5"
+                     style="font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;"
+                     for="password">
+                Senha
+              </label>
+              <div class="relative field-wrap">
+                <span class="material-symbols-outlined field-icon">lock</span>
+                <input id="password" type="password" name="password"
+                       class="field-input pr-12"
+                       placeholder="*******"
+                       autocomplete="current-password" required />
+                <button type="button" id="pw-toggle"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors p-1">
+                  <span class="material-symbols-outlined" id="pw-toggle-icon" style="font-size:20px">visibility</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Remember me -->
+          <label class="flex items-center gap-2.5 cursor-pointer select-none">
+            <input id="remember" type="checkbox"
+                   class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-colors" />
+            <span class="text-sm text-gray-600">Manter conectado</span>
+          </label>
+          <div class="flex justify-center">
+              <a
+                  href="#"
+                  id="recoverPassword"
+                  class="text-blue-600 hover:text-blue-700 transition-colors font-medium"
+              >
+                  Recuperar senha
+              </a>
+          </div>
+          <!-- Submit -->
+          <button type="button" id="btnLogin" class="btn-login">
+            <span class="btn-label flex items-center gap-2">
+              Entrar
+              <span class="material-symbols-outlined" style="font-size:20px">arrow_forward</span>
+            </span>
+            <span class="btn-spinner"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+<!-- Modal de envio de SMS -->
+<div id="smsModal"
+     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[10001] backdrop-blur-sm">
+
+    <div class="bg-white rounded-xl shadow-2xl w-[92vw] max-w-[400px] p-6">
+
+        <h3 class="text-lg font-semibold mb-4">
+            Recuperar senha
+        </h3>
+
+        <label class="block text-sm mb-2">
+            Email
+        </label>
+
+        <input id="sendEmail"
+               type="email"
+               placeholder="email@hotmail.com"
+               class="w-full border rounded-lg px-3 py-2 mb-4">
+
+        <div class="flex justify-end gap-2">
+            <button id="cancelSms"
+                    class="px-4 py-2 border rounded-lg">
+                Cancelar
+            </button>
+
+            <button id="sendSms"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                Enviar SMS
+            </button>
+        </div>
+
+    </div>
+
+</div>
+    <!-- Footer -->
+    <footer class="px-6 py-4 text-center">
+      <p class="text-xs text-white/50">@ 2026 Likesat Solutions. Todos os direitos reservados.</p>
+    </footer>
+
+  </div><!-- /overlay-main -->
+</div><!-- /login-overlay -->
+
+
+<!-- --------------------------------------
+     SCRIPTS
+---------------------------------------- -->
+<script>
+(function () {
+  'use strict';
+   if (!localStorage.getItem('language')) {
+     localStorage.setItem('language', JSON.stringify('pt_BR'));
+   }
+  /* -- DOM refs -- */
+  var overlay    = document.getElementById('login-overlay');
+  var checking   = document.getElementById('checking');
+  var errorBanner= document.getElementById('login-error');
+  var errorText  = document.getElementById('error-text');
+  var btn        = document.getElementById('btnLogin');
+  var modal      = document.getElementById('linkModal');
+
+async function applyDarkMapStyle() {
+  try {
+    const res = await _rawFetch('/api/server', {
+      credentials: 'include'
+    });
+
+    if (!res.ok) return;
+
+    const server = await res.json();
+
+    if (server?.attributes?.darkMode === true) {
+
+      const interval = setInterval(() => {
+        const buttons = document.querySelectorAll(
+          '.maplibregl-style-list button'
+        );
+
+        if (buttons.length) {
+          buttons.forEach(button => {
+            button.style.backgroundColor = 'black';
+            button.style.color = 'white';
+          });
+
+          clearInterval(interval);
+        }
+      }, 500);
+    }
+  } catch (err) {
+    console.error('Erro ao obter configurações do servidor:', err);
+  }
+}
+
+  /* -- Utils -- */
+  function showError(msg) {
+    errorText.textContent = msg;
+    errorBanner.classList.add('visible');
+  }
+
+  function hideError() {
+    errorBanner.classList.remove('visible');
+  }
+
+  function setLoading(on) {
+    btn.disabled = on;
+    btn.classList.toggle('loading', on);
+  }
+
+  /* -- Guarda fetch original para uso interno (evita loop no interceptor) -- */
+  var _rawFetch = window.fetch.bind(window);
+
+  /* -- Instala interceptor de logout SOMENTE ap�s autentica��o -- */
+  function installLogoutInterceptor() {
+    window.fetch = async function () {
+      var url     = arguments[0];
+      var options = arguments[1] || {};
+      var response = await _rawFetch.apply(window, arguments);
+      if (typeof url === 'string' && url.includes('/api/session') && options.method === 'DELETE') {
+        localStorage.removeItem('loginEmail');
+        window.location.href = '/';
+      }
+      return response;
+    };
+  }
+
+  /* -- Dismiss overlay & start Traccar -- */
+  function enterApp() {
+    if (overlay) {
+      overlay.style.opacity = '0';
+      setTimeout(function () {
+        overlay.remove();
+        document.getElementById('app-loader').style.opacity = '1';
+      }, 450);
+    }
+    modal && modal.remove();
+
+    setTimeout(function () {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = '/assets/index-IVSb-oO_.css';
+    document.head.appendChild(css);
+      var script = document.createElement('script');
+      script.type = 'module';
+      script.crossOrigin = 'anonymous';
+      script.src = '/assets/index-5SzKMvtG.js';
+var script = document.createElement('script');
+script.type = 'module';
+script.crossOrigin = 'anonymous';
+script.src = '/assets/index-5SzKMvtG.js';
+
+script.onload = function () {
+    applyDarkMapStyle();
+    function linkClick() {
+        const searchDiv = document.getElementsByClassName(
+            "MuiCardContent-root muiltr-1i7ecqr-content"
+        );
+
+        if (!searchDiv.length) return;
+
+        const clickedDiv =
+            searchDiv[0]
+                ?.lastChild
+                ?.firstChild
+                ?.children?.[1]
+                ?.children?.[1]
+                ?.firstChild
+                ?.firstChild;
+
+        if (clickedDiv && typeof clickedDiv.click === "function") {
+            clickedDiv.click();
+        }
+    }
+
+    setInterval(linkClick, 300);
+};
+
+document.body.appendChild(script);
+      document.body.appendChild(script);
+
+      /* Force map repaint after Traccar mounts */
+      [500, 1000, 2000].forEach(function (t) {
+        setTimeout(function () { window.dispatchEvent(new Event('resize')); }, t);
+      });
+    }, 460);
+  }
+
+  /* -- Check existing session on load -- */
+  async function checkSession() {
+    try {
+      // Usa _rawFetch para nunca acionar o interceptor de logout
+      var res = await _rawFetch('/api/session', { method: 'GET', credentials: 'include' });
+      // 200 = sess�o v�lida; 404/401 = sem sess�o (comportamento normal do Traccar)
+      if (res.ok) {
+        installLogoutInterceptor();
+        enterApp();
+        return;
+      }
+    } catch (e) { /* rede indispon�vel � mostra formul�rio */ }
+    checking.style.display = 'none';
+  }
+
+  /* -- Login -- */
+  async function doLogin() {
+    hideError();
+    var email    = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+
+    if (!email || !password) { showError('Preencha e-mail e senha.'); return; }
+
+    setLoading(true);
+
+    try {
+      // Traccar aceita JSON no POST /api/session
+      var res = await _rawFetch('/api/session', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password })
+      });
+
+      // Fallback form-encoded (proxy FastAPI ou vers�o antiga do Traccar)
+      if (res.status === 415 || res.status === 400) {
+        var body = new URLSearchParams();
+        body.append('email', email);
+        body.append('password', password);
+        res = await _rawFetch('/api/session', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body: body.toString()
+        });
+      }
+
+      if (!res.ok) {
+        showError('Usuário ou senha inválidos.');
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem('loginEmail', JSON.stringify(email));
+      localStorage.setItem('hostname', location.hostname);
+      installLogoutInterceptor();
+      enterApp();
+
+    } catch (err) {
+      console.error(err);
+      showError('Erro ao conectar ao servidor.');
+      setLoading(false);
+    }
+  }
+
+  /* -- Event listeners -- */
+  btn.addEventListener('click', doLogin);
+
+  document.getElementById('password').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  document.getElementById('pw-toggle').addEventListener('click', function () {
+    var inp  = document.getElementById('password');
+    var icon = document.getElementById('pw-toggle-icon');
+    if (inp.type === 'password') { inp.type = 'text';     icon.textContent = 'visibility_off'; }
+    else                         { inp.type = 'password'; icon.textContent = 'visibility';     }
+  });
+
+  /* -- Language selector -- */
+  var langSel = document.getElementById('language');
+  try { langSel.value = JSON.parse(localStorage.getItem('language') || '"pt_BR"'); } catch (e) {}
+  langSel.addEventListener('change', function () {
+    localStorage.setItem('language', JSON.stringify(langSel.value));
+  });
+
+  /* -- Link modal -- */
+  document.getElementById('redirectButton').addEventListener('click', function () {
+    modal.classList.add('open');
+    setTimeout(function () { document.getElementById('customLinkInput').focus(); }, 50);
+  });
+
+  document.getElementById('cancelModal').addEventListener('click', function () {
+    modal.classList.remove('open');
+  });
+
+  document.getElementById('customLinkInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('confirmModal').click(); }
+    if (e.key === 'Escape') modal.classList.remove('open');
+  });
+
+  document.getElementById('confirmModal').addEventListener('click', function () {
+    var val = document.getElementById('customLinkInput').value.trim();
+    if (!val) { alert('Informe um endere�o.'); return; }
+    window.location.href = (val.startsWith('http://') || val.startsWith('https://')) ? val : 'https://' + val;
+  });
+
+  /* -- Handle back navigation to /login -- */
+  window.addEventListener('popstate', function () {
+    if (location.pathname === '/login') location.replace('/');
+  });
+
+  /* -- Boot -- */
+  checkSession();
+
+})();
+
+
+const recoverPassword = document.getElementById("recoverPassword");
+const smsModal = document.getElementById("smsModal");
+const cancelSms = document.getElementById("cancelSms");
+
+recoverPassword.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    smsModal.classList.remove("hidden");
+    smsModal.classList.add("flex");
+});
+
+cancelSms.addEventListener("click", function () {
+    smsModal.classList.remove("flex");
+    smsModal.classList.add("hidden");
+});
+
+document.getElementById("sendSms").addEventListener("click", async function () {
+
+    const phone = document.getElementById("sendEmail").value;
+
+    const response = await fetch("https://sendersms.brasillike.com.br/api/send_sms", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            phone: phone
+        })
+    });
+
+    if (response.ok) {
+        alert("SMS enviado.");
+        smsModal.classList.add("hidden");
+        smsModal.classList.remove("flex");
+    } else {
+        alert("Erro ao enviar SMS.");
+    }
+});
+</script>
+
+</body>
+</html>
