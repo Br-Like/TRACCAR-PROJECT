@@ -62,7 +62,11 @@ Gera a imagem de teste. A primeira etapa compila este painel (`npm run build`). 
 
 ## `docker-compose.yml`
 
-Sobe essa imagem, publica a porta 8082 (painel e API) e as portas 5000–5150 TCP/UDP (protocolos dos rastreadores). O banco H2 e os logs ficam em volumes. É o comando para testar o painel com o servidor.
+Sobe a imagem compilada nesta máquina, publica a porta 8082 (painel e API) e as portas 5000–5150 TCP/UDP (protocolos dos rastreadores). O banco H2 e os logs ficam em volumes. É o comando para testar o painel com o servidor.
+
+## `docker-compose.prod.yml`
+
+Compose do servidor. Não compila o painel: usa a imagem `ghcr.io/br-like/traccar-project:latest` publicada pelo CI. As portas e os volumes têm os mesmos nomes do compose local, então o banco H2 permanece entre deploys. O workflow `cd.yml` faz `pull` e `up -d` deste arquivo.
 
 ## `.dockerignore`
 

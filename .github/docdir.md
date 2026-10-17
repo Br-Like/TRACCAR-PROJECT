@@ -16,7 +16,11 @@ Captura do painel referenciada na tabela do `README.md`.
 
 ## `workflows/ci.yml`
 
-Pipeline de integração contínua. Em push e pull request para `master`, executa lint e build com Node 22 e, em seguida, valida a imagem Docker sem publicá-la.
+Pipeline de integração contínua. Em push e pull request para `master`, executa lint e build com Node 22 e, em seguida, monta a imagem Docker. Publica essa imagem no GitHub Container Registry só no push para `master`.
+
+## `workflows/cd.yml`
+
+Deploy depois do CI bem-sucedido em `master`. O job roda num runner self-hosted (rótulo `traccar-02`) e sobe `docker-compose.prod.yml` com a imagem publicada.
 
 ## `workflows/translation.yml`
 
